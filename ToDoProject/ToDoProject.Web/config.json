@@ -1,0 +1,5 @@
+﻿{
+  "ConnectionStrings": {
+    "ProjectContextConnection": "Data Source=DESKTOP-04Q91KN\\SQL123;Database=TasksDatabase;User ID=sa;Password=1qaz2wsx;"
+  }
+}
