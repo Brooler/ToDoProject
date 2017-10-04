@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using ToDoProject.Web.ViewModels;
 using AutoMapper;
 using ToDoProject.Web.Models;
+using ToDoProject.Business.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ToDoProject.Web.Services
 {
@@ -10,14 +12,16 @@ namespace ToDoProject.Web.Services
     {
         private readonly SignInManager<ProjectUser> _signInManager;
         private readonly UserManager<ProjectUser> _userManager;
+        private readonly IEmailSender _emailSender;
 
-        public UserService(SignInManager<ProjectUser> signInManager, UserManager<ProjectUser> userManager)
+        public UserService(SignInManager<ProjectUser> signInManager, UserManager<ProjectUser> userManager, IEmailSender emailSender)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _emailSender = emailSender;
         }
 
-        public async Task<SignInResult> LoginUser(LoginViewModel model)
+        public async Task<Microsoft.AspNetCore.Identity.SignInResult> LoginUser(LoginViewModel model)
         {
             var user = await _userManager.FindByNameAsync(model.UserName);
             var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);

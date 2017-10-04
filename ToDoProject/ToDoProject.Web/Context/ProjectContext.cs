@@ -6,7 +6,7 @@ using ToDoProject.Web.Models;
 
 namespace ToDoProject.Web.Context
 {
-    public class ProjectContext : IdentityDbContext<ProjectUser>
+    public class ProjectContext : IdentityDbContext<ProjectUser>, IProjectContext
     {
         private readonly IConfigurationRoot _config;
         public ProjectContext(IConfigurationRoot config, DbContextOptions options)

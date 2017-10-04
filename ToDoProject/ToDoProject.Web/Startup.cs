@@ -10,6 +10,8 @@ using ToDoProject.Web.Services;
 using AutoMapper;
 using ToDoProject.Web.ViewModels;
 using ToDoProject.Web.Models;
+using ToDoProject.Business.Services;
+using ToDoProject.Web.Repository;
 
 namespace ToDoProject.Web
 {
@@ -59,6 +61,15 @@ namespace ToDoProject.Web
             });
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ITaskRepository, TaskRepository>();
+            if (_env.IsEnvironment("Development"))
+            {
+                services.AddScoped<IEmailSender, DebugEmailSender>();
+            }
+            else
+            {
+                services.AddScoped<IEmailSender, EmailSender>();
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

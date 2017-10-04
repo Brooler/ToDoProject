@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\Api\" />
     <Folder Include="Controllers\Web\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
