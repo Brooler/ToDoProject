@@ -1,9 +1,11 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace ToDoProject.Web.Models
 {
     public class TaskModel
     {
+        [Key]
         public int TaskId { get; set; }
 
         public int Name { get; set; }
