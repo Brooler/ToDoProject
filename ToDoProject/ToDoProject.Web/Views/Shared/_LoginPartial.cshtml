@@ -1,0 +1,11 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using ToDoProject.Web.Models
+
+@inject SignInManager<ProjectUser> SignInManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <form asp-controller="Auth" asp-action="Logout">
+        <input type="submit" value="Logout" class="btn btn-danger" />
+    </form>
+}

@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css" />
 </head>
 <body>
+    <div class="navbar">
+        <div class="col-md-3 col-md-offset-9">
+            @await Html.PartialAsync("_LoginPartial")
+        </div>
+    </div>
     <div>
         @RenderBody()
     </div>

@@ -66,7 +66,6 @@ namespace ToDoProject.Web
         {
             Mapper.Initialize(config =>
             {
-                config.CreateMap<LoginViewModel, ProjectUser>();
                 config.CreateMap<SignUpViewModel, ProjectUser>();
             });
 

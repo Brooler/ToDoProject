@@ -9,5 +9,7 @@ namespace ToDoProject.Web.Services
         Task<IdentityResult> RegisterUser(SignUpViewModel model);
 
         Task<SignInResult> LoginUser(LoginViewModel model);
+
+        Task LogoutUser();
     }
 }

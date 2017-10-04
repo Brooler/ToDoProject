@@ -19,7 +19,7 @@ namespace ToDoProject.Web.Services
 
         public async Task<SignInResult> LoginUser(LoginViewModel model)
         {
-            var user = Mapper.Map<ProjectUser>(model);
+            var user = await _userManager.FindByNameAsync(model.UserName);
             var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);
 
             return result;
@@ -37,6 +37,11 @@ namespace ToDoProject.Web.Services
             }
 
             return result;
+        }
+
+        public async Task LogoutUser()
+        {
+            await _signInManager.SignOutAsync();
         }
     }
 }

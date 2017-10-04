@@ -80,6 +80,14 @@ namespace ToDoProject.Web.Controllers.Web
             return View(model);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await _userService.LogoutUser();
+
+            return RedirectToAction("Index", "App");
+        }
+
         private IActionResult RedirectToLocal(string url)
         {
             if (Url.IsLocalUrl(url))
