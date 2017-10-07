@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using ToDoProject.Web.Models;
 using ToDoProject.Web.ViewModels;
 
@@ -6,11 +7,11 @@ namespace ToDoProject.Web.Repository
 {
     public interface ITaskRepository
     {
-        Task<TaskModel> GetAllUserTasks(string userId);
+        Task<IEnumerable<TaskCollectionViewModel>> GetAllUserTasks(string userId);
 
-        Task<TaskModel> GetTask(int taskId);
+        Task<TaskAddEditViewModel> GetTask(int taskId);
 
-        Task AddTask(TaskAddEditViewModel model);
+        Task<bool> AddEditTask(TaskAddEditViewModel model);
 
         Task<bool> CompleteTask(int taskId);
 

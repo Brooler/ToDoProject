@@ -8,7 +8,7 @@ namespace ToDoProject.Web.Models
         [Key]
         public int TaskId { get; set; }
 
-        public int Name { get; set; }
+        public string Name { get; set; }
 
         public DateTime DueDate { get; set; }
 

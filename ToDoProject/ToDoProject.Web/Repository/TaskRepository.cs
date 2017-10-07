@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using ToDoProject.Web.Context;
 using ToDoProject.Web.Models;
 using ToDoProject.Web.ViewModels;
 
@@ -7,7 +9,14 @@ namespace ToDoProject.Web.Repository
 {
     public class TaskRepository : ITaskRepository
     {
-        public Task AddTask(TaskAddEditViewModel model)
+        private readonly IProjectContext _projectContext;
+
+        public TaskRepository(IProjectContext projectContext)
+        {
+            _projectContext = projectContext;
+        }
+
+        public Task<bool> AddEditTask(TaskAddEditViewModel model)
         {
             throw new NotImplementedException();
         }
@@ -15,6 +24,7 @@ namespace ToDoProject.Web.Repository
         public Task<bool> CompleteTask(int taskId)
         {
             throw new NotImplementedException();
+            
         }
 
         public Task<bool> DeleteTask(int taskId)
@@ -22,12 +32,12 @@ namespace ToDoProject.Web.Repository
             throw new NotImplementedException();
         }
 
-        public Task<TaskModel> GetAllUserTasks(string userId)
+        public Task<IEnumerable<TaskCollectionViewModel>> GetAllUserTasks(string userId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<TaskModel> GetTask(int taskId)
+        public Task<TaskAddEditViewModel> GetTask(int taskId)
         {
             throw new NotImplementedException();
         }
