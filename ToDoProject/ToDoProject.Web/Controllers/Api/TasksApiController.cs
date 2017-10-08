@@ -21,34 +21,93 @@ namespace ToDoProject.Web.Controllers.Api
         [HttpGet("all")]
         public async Task<IActionResult> GetUserTasks()
         {
-            throw new NotImplementedException();
-            //var result = await _taskRepository.GetAllUserTasks(string.Empty);
+            var collection = await _taskRepository.GetAllUserTasks(string.Empty);
 
-            //return Ok(result);
+            return Ok(collection);
         }
 
         [HttpGet("{taskId}")]
         public async Task<IActionResult> GetTaskById(int taskId)
         {
-            throw new NotImplementedException();
+            if (taskId == 0)
+            {
+                ModelState.AddModelError(string.Empty, "taskId can't be 0");
+                return BadRequest();
+            }
+            var task = await _taskRepository.GetTask(taskId);
+
+            return Ok(task);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddEditTask(TaskAddEditViewModel model)
+        public async Task<IActionResult> AddEditTask([FromBody]TaskAddEditViewModel model)
         {
-            throw new NotImplementedException();
+            if (!ModelState.IsValid || model == null)
+            {
+                return BadRequest();
+            }
+            var completed = await _taskRepository.AddEditTask(model);
+            if (completed)
+            {
+                completed = completed && await _taskRepository.SaveChanges();
+            }
+
+            if (completed)
+            {
+                return Ok();
+            }
+            ModelState.AddModelError(string.Empty, "Changes wasn't saved");
+
+            return BadRequest();
         }
 
         [HttpPut("complete/{taskId}")]
         public async Task<IActionResult> CompleteTask(int taskId)
         {
-            throw new NotImplementedException();
+            if(taskId == 0)
+            {
+                ModelState.AddModelError(string.Empty, "taskId can't be 0");
+
+                return BadRequest();
+            }
+
+            var completed = await _taskRepository.CompleteTask(taskId);
+            if (completed)
+            {
+                completed = completed && await _taskRepository.SaveChanges();
+            }
+
+            if (completed)
+            {
+                return Ok();
+            }
+            ModelState.AddModelError(string.Empty, "Something went wrong, changes wasn't saved");
+
+            return BadRequest();
         }
 
         [HttpDelete("{taskId}")]
         public async Task<IActionResult> DeleteTask(int taskId)
         {
-            throw new NotImplementedException();
+            if (taskId == 0)
+            {
+                ModelState.AddModelError(string.Empty, "taskId can't be 0");
+
+                return BadRequest();
+            }
+
+            var completed = await _taskRepository.DeleteTask(taskId);
+            if (completed)
+            {
+                completed = completed && await _taskRepository.SaveChanges();
+            }
+
+            if (completed)
+            {
+                return Ok();
+            }
+
+            return BadRequest();
         }
     }
 }
