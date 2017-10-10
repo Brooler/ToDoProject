@@ -6,8 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ToDoProject.Web.Context;
+using ToDoProject.Web.Helpers;
 using ToDoProject.Web.Models;
 using ToDoProject.Web.Repository;
+using ToDoProject.Web.Services;
 using ToDoProject.Web.ViewModels;
 
 namespace ToDoProject.Tests.RepositoryTests
@@ -19,23 +21,32 @@ namespace ToDoProject.Tests.RepositoryTests
         public async Task Repository_AddTask_Test()
         {
             //arrange
+            MapperHelper.InitializeMapper();
             var vm = new TaskAddEditViewModel()
             {
                 Name="test task",
                 Comment = "test comment",
                 PriorityId = Priority.High
             };
+            var user = new ProjectUser
+            {
+                Id = "qwer"
+            };
             var contextMock = new Mock<IProjectContext>();
-            contextMock.SetupSet(x => x.Tasks = It.IsAny<DbSet<TaskModel>>()).Verifiable();
-            var repository = new TaskRepository(contextMock.Object);
+            var dbsetMock = CreateDbSetMock(new List<TaskModel>());
+            contextMock.Setup(x => x.Tasks).Returns(dbsetMock.Object);
+            var userServiceMock = new Mock<IUserService>();
+            userServiceMock.Setup(x => x.GetUserById(It.IsAny<string>()))
+                .Returns(Task.FromResult(user));
+            var repository = new TaskRepository(contextMock.Object, userServiceMock.Object);
 
             //act
-            await repository.AddEditTask(vm);
+            var result = await repository.AddEditTask(vm);
 
             //assert
-            contextMock.VerifySet(x => x.Tasks = It.IsAny<DbSet<TaskModel>>());
-            Assert.AreEqual(1, await contextMock.Object.Tasks.CountAsync());
-            Assert.IsNotNull(await contextMock.Object.Tasks.SingleOrDefaultAsync());
+            Assert.IsTrue(result);
+            Assert.AreEqual(1, contextMock.Object.Tasks.Count(), "Object wasn't added to DbSet");
+            Assert.IsNotNull(contextMock.Object.Tasks.SingleOrDefault(), "Object was added to DbSet more than one time");
         }
 
         [TestMethod]
@@ -53,24 +64,24 @@ namespace ToDoProject.Tests.RepositoryTests
             };
             var sourceList = new List<TaskModel>() { task };
             var contextMock = new Mock<IProjectContext>();
-            contextMock.Object.Tasks = CreateDbSetMock(sourceList).Object;
-            contextMock.Setup(x => x.SaveChangesAsync());
-            var repository = new TaskRepository(contextMock.Object);
+            contextMock.Setup(x => x.Tasks).Returns(CreateDbSetMock(sourceList).Object);
+            var userServiceMock = new Mock<IUserService>();
+            var repository = new TaskRepository(contextMock.Object, userServiceMock.Object);
 
             //act
             var result = await repository.CompleteTask(12);
 
             //assert
             Assert.IsTrue(result);
-            Assert.IsTrue((await contextMock.Object.Tasks.SingleOrDefaultAsync(x => x.TaskId == task.TaskId)).IsCompleted);
-            Assert.IsNotNull((await contextMock.Object.Tasks.SingleOrDefaultAsync(x => x.TaskId == task.TaskId)).CompletedDate);
-            contextMock.Verify(x => x.SaveChangesAsync(), Times.Once);
+            Assert.IsTrue(contextMock.Object.Tasks.SingleOrDefault(x => x.TaskId == task.TaskId).IsCompleted);
+            Assert.IsNotNull(contextMock.Object.Tasks.SingleOrDefault(x => x.TaskId == task.TaskId).CompletedDate);
         }
 
         [TestMethod]
         public async Task Repository_EditTask_Test()
         {
             //arrange
+            MapperHelper.InitializeMapper();
             var vm = new TaskAddEditViewModel
             {
                 TaskId = 3,
@@ -87,17 +98,24 @@ namespace ToDoProject.Tests.RepositoryTests
                 PriorityId = Priority.High,
                 DueDate = DateTime.UtcNow
             };
+            var user = new ProjectUser
+            {
+                Id = "qwer"
+            };
             var sourceList = new List<TaskModel>() { task };
             var contextMock = new Mock<IProjectContext>();
-            contextMock.Object.Tasks = CreateDbSetMock(sourceList).Object;
-            var repository = new TaskRepository(contextMock.Object);
+            contextMock.Setup(x => x.Tasks).Returns(CreateDbSetMock(sourceList).Object);
+            var userServiceMock = new Mock<IUserService>();
+            userServiceMock.Setup(x => x.GetUserById(It.IsAny<string>()))
+                .Returns(Task.FromResult(user));
+            var repository = new TaskRepository(contextMock.Object, userServiceMock.Object);
 
             //act
             var result = await repository.AddEditTask(vm);
 
             //assert
             Assert.IsTrue(result);
-            var editedObj = await contextMock.Object.Tasks.FirstOrDefaultAsync(x => x.TaskId == vm.TaskId);
+            var editedObj = contextMock.Object.Tasks.FirstOrDefault(x => x.TaskId == vm.TaskId);
             Assert.AreEqual(vm.Name, editedObj.Name);
             Assert.AreEqual(vm.Comment, editedObj.Comment);
             Assert.AreEqual(vm.DueDate, editedObj.DueDate);
@@ -108,6 +126,7 @@ namespace ToDoProject.Tests.RepositoryTests
         public async Task Repository_GetAllUserTasks_Test()
         {
             //arrange
+            MapperHelper.InitializeMapper();
             var collection = new List<TaskModel>
             {
                 new TaskModel
@@ -135,9 +154,16 @@ namespace ToDoProject.Tests.RepositoryTests
                     Name = "third"
                 },
             };
+            var user = new ProjectUser
+            {
+                Id = "qwer"
+            };
             var contextMock = new Mock<IProjectContext>();
-            contextMock.Object.Tasks = CreateDbSetMock(collection).Object;
-            var repository = new TaskRepository(contextMock.Object);
+            contextMock.Setup(x => x.Tasks).Returns(CreateDbSetMock(collection).Object);
+            var userServiceMock = new Mock<IUserService>();
+            userServiceMock.Setup(x => x.GetUserById(It.IsAny<string>()))
+                .Returns(Task.FromResult(user));
+            var repository = new TaskRepository(contextMock.Object, userServiceMock.Object);
 
             //act
             var firstuserResults = await repository.GetAllUserTasks("firstuser");
@@ -155,6 +181,7 @@ namespace ToDoProject.Tests.RepositoryTests
         public async Task Repository_GetTask_Test()
         {
             //arrange
+            MapperHelper.InitializeMapper();
             var collection = new List<TaskModel>
             {
                 new TaskModel
@@ -174,8 +201,9 @@ namespace ToDoProject.Tests.RepositoryTests
                 }
             };
             var contextMock = new Mock<IProjectContext>();
-            contextMock.Object.Tasks = CreateDbSetMock(collection).Object;
-            var repository = new TaskRepository(contextMock.Object);
+            contextMock.Setup(x => x.Tasks).Returns(CreateDbSetMock(collection).Object);
+            var userServiceMock = new Mock<IUserService>();
+            var repository = new TaskRepository(contextMock.Object, userServiceMock.Object);
 
             //act
             var firstResult = await repository.GetTask(1);
@@ -214,8 +242,9 @@ namespace ToDoProject.Tests.RepositoryTests
                 }
             };
             var contextMock = new Mock<IProjectContext>();
-            contextMock.Object.Tasks = CreateDbSetMock(collection).Object;
-            var repository = new TaskRepository(contextMock.Object);
+            contextMock.Setup(x => x.Tasks).Returns(CreateDbSetMock(collection).Object);
+            var userServiceMock = new Mock<IUserService>();
+            var repository = new TaskRepository(contextMock.Object, userServiceMock.Object);
 
             //act
             var firstResult = await repository.DeleteTask(1);
@@ -227,8 +256,11 @@ namespace ToDoProject.Tests.RepositoryTests
             Assert.IsTrue(thirdResult);
             Assert.IsFalse(fourthResult);
             Assert.IsTrue(contextMock.Object.Tasks.Select(t => t.TaskId).Contains(2));
-            Assert.IsFalse(contextMock.Object.Tasks.Select(t => t.TaskId).Contains(1));
-            Assert.IsFalse(contextMock.Object.Tasks.Select(t => t.TaskId).Contains(3));
+            Assert.IsTrue(contextMock.Object.Tasks.Select(t => t.TaskId).Contains(1));
+            Assert.IsTrue(contextMock.Object.Tasks.Select(t => t.TaskId).Contains(3));
+            Assert.IsTrue(contextMock.Object.Tasks.SingleOrDefault(t => t.TaskId == 1).IsDeleted);
+            Assert.IsFalse(contextMock.Object.Tasks.SingleOrDefault(t => t.TaskId == 2).IsDeleted);
+            Assert.IsTrue(contextMock.Object.Tasks.SingleOrDefault(t => t.TaskId == 3).IsDeleted);
         }
 
         public static Mock<DbSet<TaskModel>> CreateDbSetMock(List<TaskModel> tasks)

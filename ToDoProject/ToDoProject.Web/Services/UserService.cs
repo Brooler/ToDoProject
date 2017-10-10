@@ -4,7 +4,7 @@ using ToDoProject.Web.ViewModels;
 using AutoMapper;
 using ToDoProject.Web.Models;
 using ToDoProject.Business.Services;
-using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ToDoProject.Web.Services
 {
@@ -46,6 +46,18 @@ namespace ToDoProject.Web.Services
         public async Task LogoutUser()
         {
             await _signInManager.SignOutAsync();
+        }
+
+        public async Task<string> GetCurrentUserId(ClaimsPrincipal user)
+        {
+            var projectUser = await _userManager.GetUserAsync(user);
+
+            return projectUser.Id;
+        }
+
+        public async Task<ProjectUser> GetUserById(string userId)
+        {
+            return await _userManager.FindByIdAsync(userId);
         }
     }
 }

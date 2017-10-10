@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using ToDoProject.Web.Models;
 using ToDoProject.Web.Repository;
+using ToDoProject.Web.Services;
 using ToDoProject.Web.ViewModels;
 
 namespace ToDoProject.Web.Controllers.Api
@@ -12,16 +15,19 @@ namespace ToDoProject.Web.Controllers.Api
     public class TasksApiController : Controller
     {
         private readonly ITaskRepository _taskRepository;
+        private readonly IUserService _userService;
 
-        public TasksApiController(ITaskRepository taskRepository)
+        public TasksApiController(ITaskRepository taskRepository, IUserService userService)
         {
             _taskRepository = taskRepository;
+            _userService = userService;
         }
 
         [HttpGet("all")]
         public async Task<IActionResult> GetUserTasks()
         {
-            var collection = await _taskRepository.GetAllUserTasks(string.Empty);
+            var userId = await _userService.GetCurrentUserId(User);
+            var collection = await _taskRepository.GetAllUserTasks(userId);
 
             return Ok(collection);
         }
@@ -46,6 +52,8 @@ namespace ToDoProject.Web.Controllers.Api
             {
                 return BadRequest();
             }
+            var userId = await _userService.GetCurrentUserId(User);
+            model.UserId = userId;
             var completed = await _taskRepository.AddEditTask(model);
             if (completed)
             {

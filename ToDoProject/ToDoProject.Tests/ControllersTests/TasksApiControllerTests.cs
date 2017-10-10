@@ -4,10 +4,12 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using ToDoProject.Web.Controllers.Api;
 using ToDoProject.Web.Models;
 using ToDoProject.Web.Repository;
+using ToDoProject.Web.Services;
 using ToDoProject.Web.ViewModels;
 
 namespace ToDoProject.Tests.ControllersTests
@@ -40,7 +42,10 @@ namespace ToDoProject.Tests.ControllersTests
             var repositoryMock = new Mock<ITaskRepository>();
             repositoryMock.Setup(x => x.GetAllUserTasks(It.IsAny<string>()))
                 .Returns(Task.FromResult(collection.AsEnumerable()));
-            var controller = new TasksApiController(repositoryMock.Object);
+            var userServiceMock = new Mock<IUserService>();
+            userServiceMock.Setup(x => x.GetCurrentUserId(It.IsAny<ClaimsPrincipal>()))
+                .Returns(Task.FromResult(It.IsAny<string>()));
+            var controller = new TasksApiController(repositoryMock.Object, userServiceMock.Object);
 
             //act
             var result = await controller.GetUserTasks();
@@ -67,7 +72,8 @@ namespace ToDoProject.Tests.ControllersTests
             var repositoryMock = new Mock<ITaskRepository>();
             repositoryMock.Setup(x => x.GetTask(It.IsAny<int>()))
                 .Returns(Task.FromResult(task));
-            var controller = new TasksApiController(repositoryMock.Object);
+            var userServiceMock = new Mock<IUserService>();
+            var controller = new TasksApiController(repositoryMock.Object, userServiceMock.Object);
 
             //act
             var resultCorrectId = await controller.GetTaskById(12);
@@ -110,7 +116,10 @@ namespace ToDoProject.Tests.ControllersTests
                 .Returns(Task.FromResult(false));
             repositoryMock.Setup(x => x.SaveChanges())
                 .Returns(Task.FromResult(true));
-            var controller = new TasksApiController(repositoryMock.Object);
+            var userServiceMock = new Mock<IUserService>();
+            userServiceMock.Setup(x => x.GetCurrentUserId(It.IsAny<ClaimsPrincipal>()))
+                .Returns(Task.FromResult(It.IsAny<string>()));
+            var controller = new TasksApiController(repositoryMock.Object, userServiceMock.Object);
 
             //act
             var resultCorrectModel = await controller.AddEditTask(correctTask);
@@ -139,7 +148,8 @@ namespace ToDoProject.Tests.ControllersTests
                 .Returns(Task.FromResult(false));
             repositoryMock.Setup(x => x.SaveChanges())
                 .Returns(Task.FromResult(true));
-            var controller = new TasksApiController(repositoryMock.Object);
+            var userServiceMock = new Mock<IUserService>();
+            var controller = new TasksApiController(repositoryMock.Object, userServiceMock.Object);
 
             //act
             var resultIncorrect = await controller.CompleteTask(It.IsAny<int>());
@@ -168,7 +178,8 @@ namespace ToDoProject.Tests.ControllersTests
                 .Returns(Task.FromResult(false));
             repositoryMock.Setup(x => x.SaveChanges())
                 .Returns(Task.FromResult(true));
-            var controller = new TasksApiController(repositoryMock.Object);
+            var userServiceMock = new Mock<IUserService>();
+            var controller = new TasksApiController(repositoryMock.Object, userServiceMock.Object);
 
             //act
             var resultIncorrect = await controller.DeleteTask(It.IsAny<int>());

@@ -12,6 +12,7 @@ using ToDoProject.Web.ViewModels;
 using ToDoProject.Web.Models;
 using ToDoProject.Business.Services;
 using ToDoProject.Web.Repository;
+using ToDoProject.Web.Helpers;
 
 namespace ToDoProject.Web
 {
@@ -75,10 +76,7 @@ namespace ToDoProject.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            Mapper.Initialize(config =>
-            {
-                config.CreateMap<SignUpViewModel, ProjectUser>();
-            });
+            MapperHelper.InitializeMapper();
 
             loggerFactory.AddConsole();
 

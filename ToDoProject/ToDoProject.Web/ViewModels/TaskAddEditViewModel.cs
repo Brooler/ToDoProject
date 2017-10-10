@@ -17,5 +17,7 @@ namespace ToDoProject.Web.ViewModels
         public DateTime? DueDate { get; set; }
 
         public Priority PriorityId { get; set; }
+
+        public string UserId { get; set; }
     }
 }
