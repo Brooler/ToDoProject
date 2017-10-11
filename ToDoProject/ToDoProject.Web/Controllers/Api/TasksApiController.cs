@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Threading.Tasks;
-using ToDoProject.Web.Models;
 using ToDoProject.Web.Repository;
 using ToDoProject.Web.Services;
 using ToDoProject.Web.ViewModels;

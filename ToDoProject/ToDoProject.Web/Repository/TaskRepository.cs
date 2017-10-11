@@ -88,7 +88,7 @@ namespace ToDoProject.Web.Repository
         {
             var entities = _projectContext.Tasks
                 .Include(x => x.User)
-                .Where(x => x.User.Id == userId)
+                .Where(x => x.User.Id == userId && !x.IsDeleted)
                 .ProjectTo<TaskCollectionViewModel>();
 
             return entities.ToList();

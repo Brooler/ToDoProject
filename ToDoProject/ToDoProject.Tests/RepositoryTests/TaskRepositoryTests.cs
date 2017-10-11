@@ -178,6 +178,62 @@ namespace ToDoProject.Tests.RepositoryTests
         }
 
         [TestMethod]
+        public async Task Repository_GetAllUserTasks_ContainsNoDelatedTasks()
+        {
+            //arrange
+            MapperHelper.InitializeMapper();
+            var collection = new List<TaskModel>
+            {
+                new TaskModel
+                {
+                    User = new ProjectUser()
+                    {
+                        Id = "firstuser"
+                    },
+                    Name = "first",
+                    IsDeleted = true
+                },
+                new TaskModel
+                {
+                    User = new ProjectUser()
+                    {
+                        Id = "firstuser"
+                    },
+                    Name = "second"
+                },
+                new TaskModel
+                {
+                    User = new ProjectUser()
+                    {
+                        Id = "seconduser"
+                    },
+                    Name = "third",
+                    IsDeleted = true
+                },
+            };
+            var user = new ProjectUser
+            {
+                Id = "qwer"
+            };
+            var contextMock = new Mock<IProjectContext>();
+            contextMock.Setup(x => x.Tasks).Returns(CreateDbSetMock(collection).Object);
+            var userServiceMock = new Mock<IUserService>();
+            userServiceMock.Setup(x => x.GetUserById(It.IsAny<string>()))
+                .Returns(Task.FromResult(user));
+            var repository = new TaskRepository(contextMock.Object, userServiceMock.Object);
+
+            //act
+            var firstuserResults = await repository.GetAllUserTasks("firstuser");
+            var seconduserResults = await repository.GetAllUserTasks("seconduser");
+            var thirduserResults = await repository.GetAllUserTasks("thirduser");
+
+            //assert
+            Assert.AreEqual(1, firstuserResults.Count());
+            Assert.AreEqual(0, seconduserResults.Count());
+            Assert.AreEqual(0, thirduserResults.Count());
+        }
+
+        [TestMethod]
         public async Task Repository_GetTask_Test()
         {
             //arrange
