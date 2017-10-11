@@ -1,0 +1,16 @@
+﻿<div class="col-lg-6 col-lg-offset-3 col-md-12 col-sm-12">
+    <div class="text-danger" ng-show="vm.errorMessage">{{vm.errorMessage}}</div>
+    <wait-cursor display-when="vm.isBusy"></wait-cursor>
+    <table class="table table-responsive table-striped">
+        <tr>
+            <th>Name</th>
+            <th>Due date</th>
+            <th>Actions</th>
+        </tr>
+        <tr ng-repeat="task in vm.tasks">
+            <td>{{ task.name }}</td>
+            <td>{{ task.dueDate | date:'MM-dd-yyyy' }}</td>
+            <td><a ng-href="#/editor/{{ task.taskId }}" class="btn btn-sm btn-primary">Manage</a></td>
+        </tr>
+    </table>
+</div>

@@ -63,6 +63,7 @@ namespace ToDoProject.Web
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITaskRepository, TaskRepository>();
+            services.AddScoped<IProjectContext, ProjectContext>();
             if (_env.IsEnvironment("Development"))
             {
                 services.AddScoped<IEmailSender, DebugEmailSender>();
@@ -86,6 +87,7 @@ namespace ToDoProject.Web
             }
 
             app.UseStaticFiles();
+            app.UseDefaultFiles();
 
             app.UseAuthentication();
 

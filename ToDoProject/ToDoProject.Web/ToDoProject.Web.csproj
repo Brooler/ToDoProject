@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Controllers\Web\" />
-    <Folder Include="wwwroot\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="6.1.1" />
