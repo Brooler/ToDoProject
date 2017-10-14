@@ -1,16 +1,22 @@
 ﻿<div class="col-lg-6 col-lg-offset-3 col-md-12 col-sm-12">
     <div class="text-danger" ng-show="vm.errorMessage">{{vm.errorMessage}}</div>
     <wait-cursor display-when="vm.isBusy"></wait-cursor>
+    <a ng-href='#!/editor/0' class="btn btn-primary">Create task</a>
     <table class="table table-responsive table-striped">
         <tr>
+            <th>Complete</th>
             <th>Name</th>
             <th>Due date</th>
             <th>Actions</th>
         </tr>
-        <tr ng-repeat="task in vm.tasks">
+        <tr ng-repeat="task in vm.tasks" class="{{vm.getClassForItem(task)}}">
+            <td><a class="btn btn-success" ng-click="vm.completeTask(task.taskId)"><i class="fa fa-check"></i></a></td>
             <td>{{ task.name }}</td>
-            <td>{{ task.dueDate | date:'MM-dd-yyyy' }}</td>
-            <td><a ng-href="#/editor/{{ task.taskId }}" class="btn btn-sm btn-primary">Manage</a></td>
+            <td>{{ task.dueDate | date:'dd/MM/yyyy' }}</td>
+            <td>
+                <a ng-href="#!/editor/{{task.taskId}}" class="btn btn-sm btn-primary"><i class="fa fa-pencil"></i></a>
+                <a ng-click="vm.deleteTask(task.taskId)" class="btn btn-sm btn-danger"><i class="fa fa-close"></i></a>
+            </td>
         </tr>
     </table>
 </div>

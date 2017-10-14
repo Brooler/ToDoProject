@@ -14,7 +14,8 @@ namespace ToDoProject.Web.ViewModels
 
         public string Comment { get; set; }
         
-        public DateTime? DueDate { get; set; }
+        [Required]
+        public DateTime DueDate { get; set; }
 
         public Priority PriorityId { get; set; }
 

@@ -1,10 +1,39 @@
-﻿<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <title></title>
-</head>
-<body>
-
-</body>
-</html>
+﻿<div class="col-lg-6 col-lg-offset-3 col-md-12">
+    <a ng-href="#/" class="btn btn-primary">Back to list</a>
+    <div class="text-danger" ng-show="vm.errorMessage">{{vm.errorMessage}}</div>
+    <wait-cursor display-when="vm.isBusy"></wait-cursor>
+    <form novalidate name="taskEdit" ng-submit="vm.submitForm()">
+        <div class="form-group">
+            <label for="name">Task Name</label>
+            <input type="text" id="name" name="name" ng-model="vm.task.name" required/>
+            <span ng-show="newTripForm.name.$error.required" class="text-warning">Name is required.</span>
+        </div>
+        <div class="form-group">
+            <label for="comment">Comment</label>
+            <input type="text" id="comment" name="comment" ng-model="vm.task.comment" />
+        </div>
+        <div class="form-group">
+            <label for="duedate">Due Date</label>
+            <input type="datetime" id="duedate" name="duedate" 
+                   ng-model="vm.task.dueDate" 
+                   required 
+                   ng-pattern="/^(\d{2})\/(\d{2})\/(\d{4})$/"
+                   placeholder="DD/MM/YYYY"/>
+            <span ng-show="newTripForm.name.$error.required" class="text-warning">Due Date is required.</span>
+            <span class="text-danger" ng-show="newStopForm.arrival.$error.pattern">Must be in format of DD/MM/YYYY.</span>
+        </div>
+        <div class="form-group">
+            <label for="priority">Priority</label>
+            <select id="priority" name="priority" ng-model="vm.task.priorityId">
+                <option ng-repeat="item in vm.priorities" value="{{item.id}}" ng-selected="item.id == vm.task.priorityId">{{item.name}}</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <div class="form-group">
+                <input type="submit" value="Done"
+                       class="btn btn-success"
+                       ng-disabled="taskEdit.$invalid" />
+            </div>
+        </div>
+    </form>
+</div>

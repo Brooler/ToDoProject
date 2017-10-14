@@ -20,6 +20,8 @@ namespace ToDoProject.Web.Models
 
         public string Comment { get; set; }
 
+        public string UserId { get; set; }
+
         public ProjectUser User { get; set; }
 
         public Priority PriorityId { get; set; }
@@ -29,7 +31,7 @@ namespace ToDoProject.Web.Models
     {
         Lowest = 0,
         Low = 1,
-        Middle = 2,
+        Medium = 2,
         High = 3,
         Critical = 4
     }

@@ -25,11 +25,10 @@ namespace ToDoProject.Web.Repository
 
         public async Task<bool> AddEditTask(TaskAddEditViewModel model)
         {
-            var user = await _userService.GetUserById(model.UserId);
             bool result = false;
             if (model.TaskId == 0)
             {
-                result = AddTask(model, user);
+                result = AddTask(model);
             }
             else
             {
@@ -87,8 +86,7 @@ namespace ToDoProject.Web.Repository
         public async Task<IEnumerable<TaskCollectionViewModel>> GetAllUserTasks(string userId)
         {
             var entities = _projectContext.Tasks
-                .Include(x => x.User)
-                .Where(x => x.User.Id == userId && !x.IsDeleted)
+                .Where(x => x.UserId == userId && !x.IsDeleted && !x.IsCompleted)
                 .ProjectTo<TaskCollectionViewModel>();
 
             return entities.ToList();
@@ -117,13 +115,12 @@ namespace ToDoProject.Web.Repository
             return result > 0;
         }
 
-        private bool AddTask(TaskAddEditViewModel task, ProjectUser user)
+        private bool AddTask(TaskAddEditViewModel task)
         {
             try
             {
                 //await _projectContext.Tasks.AddAsync(task); - not working
                 var entity = Mapper.Map<TaskModel>(task);
-                entity.User = user;
                 _projectContext.Tasks.Add(entity);
 
                 return true;

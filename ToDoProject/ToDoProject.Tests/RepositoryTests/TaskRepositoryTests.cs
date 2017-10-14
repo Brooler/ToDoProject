@@ -88,7 +88,7 @@ namespace ToDoProject.Tests.RepositoryTests
                 Name = "Edited name",
                 Comment = "edited comment",
                 DueDate = DateTime.UtcNow.AddDays(2),
-                PriorityId = Priority.Middle
+                PriorityId = Priority.Medium
             };
             var task = new TaskModel
             {
@@ -131,26 +131,17 @@ namespace ToDoProject.Tests.RepositoryTests
             {
                 new TaskModel
                 {
-                    User = new ProjectUser()
-                    {
-                        Id = "firstuser"
-                    },
+                    UserId = "firstuser",
                     Name = "first"
                 },
                 new TaskModel
                 {
-                    User = new ProjectUser()
-                    {
-                        Id = "firstuser"
-                    },
+                    UserId = "firstuser",
                     Name = "second"
                 },
                 new TaskModel
                 {
-                    User = new ProjectUser()
-                    {
-                        Id = "seconduser"
-                    },
+                    UserId = "seconduser",
                     Name = "third"
                 },
             };
@@ -178,6 +169,54 @@ namespace ToDoProject.Tests.RepositoryTests
         }
 
         [TestMethod]
+        public async Task Repository_GetAllUserTasks_IsOverdueSettedCorrectly()
+        {
+            //arrange
+            MapperHelper.InitializeMapper();
+            var collection = new List<TaskModel>
+            {
+                new TaskModel
+                {
+                    UserId = "firstuser",
+                    Name = "first",
+                    DueDate = DateTime.UtcNow.AddDays(-2)
+                },
+                new TaskModel
+                {
+                    UserId = "firstuser",
+                    Name = "second",
+                    DueDate = DateTime.UtcNow.AddDays(-1)
+                },
+                new TaskModel
+                {
+                    UserId = "seconduser",
+                    Name = "third",
+                    DueDate = DateTime.UtcNow.AddDays(2)
+                },
+            };
+            var user = new ProjectUser
+            {
+                Id = "qwer"
+            };
+            var contextMock = new Mock<IProjectContext>();
+            contextMock.Setup(x => x.Tasks).Returns(CreateDbSetMock(collection).Object);
+            var userServiceMock = new Mock<IUserService>();
+            userServiceMock.Setup(x => x.GetUserById(It.IsAny<string>()))
+                .Returns(Task.FromResult(user));
+            var repository = new TaskRepository(contextMock.Object, userServiceMock.Object);
+
+            //act
+            var firstuserResults = await repository.GetAllUserTasks("firstuser");
+            var seconduserResults = await repository.GetAllUserTasks("seconduser");
+            var thirduserResults = await repository.GetAllUserTasks("thirduser");
+
+            //assert
+            Assert.IsTrue(firstuserResults.First(x => x.Name == "first").IsOverdue);
+            Assert.IsTrue(firstuserResults.First(x => x.Name == "second").IsOverdue);
+            Assert.IsFalse(seconduserResults.First(x => x.Name == "third").IsOverdue);
+        }
+
+        [TestMethod]
         public async Task Repository_GetAllUserTasks_ContainsNoDelatedTasks()
         {
             //arrange
@@ -186,27 +225,18 @@ namespace ToDoProject.Tests.RepositoryTests
             {
                 new TaskModel
                 {
-                    User = new ProjectUser()
-                    {
-                        Id = "firstuser"
-                    },
+                    UserId = "firstuser",
                     Name = "first",
                     IsDeleted = true
                 },
                 new TaskModel
                 {
-                    User = new ProjectUser()
-                    {
-                        Id = "firstuser"
-                    },
+                    UserId = "firstuser",
                     Name = "second"
                 },
                 new TaskModel
                 {
-                    User = new ProjectUser()
-                    {
-                        Id = "seconduser"
-                    },
+                    UserId = "seconduser",
                     Name = "third",
                     IsDeleted = true
                 },
