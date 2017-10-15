@@ -85,6 +85,11 @@ namespace ToDoProject.Web
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.UseStatusCodePagesWithReExecute("/error/index");
+                app.UseExceptionHandler("/error/index");
+            }
 
             app.UseStaticFiles();
             app.UseDefaultFiles();
